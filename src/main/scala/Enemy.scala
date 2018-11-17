@@ -1,6 +1,6 @@
 import scala.util.Random
 
-object Enemy {
+class Enemy {
 
   val ENEMY_NAMES: List[String] = List("Zombie", "Skeleton", "Warrior", "Goblin", "Werewolf", "Vampire")
 
@@ -15,7 +15,7 @@ object Enemy {
   private var health: Int = 0
   private var name: String = ""
 
-  class Enemy {
+  {
       name = ENEMY_NAMES(RANDOM.nextInt(ENEMY_NAMES.length))
       health = RANDOM.nextInt(MAXIMUM_HEALTH)
   }

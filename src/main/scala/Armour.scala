@@ -1,4 +1,4 @@
-object Armour {
+class Armour {
   val LEATHER_HITPOINTS: Int = 5
   val LEATHER_DAMGAGE_BLOCKED: Int = 2
 
@@ -13,8 +13,8 @@ object Armour {
   private var damageBlocked: Int = 0
 
 
-  class Armour(str: String) {
-
+  def this(str: String) {
+    this(str)
     if(str == null) ""
 
     name = str + " armour"

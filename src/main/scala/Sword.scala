@@ -1,4 +1,4 @@
-object Sword {
+class Sword {
   val WOOD_HITPOINTS: Int = 10
 
   val WOOD_DAMAGE_INCREASE: Int = 5
@@ -17,8 +17,8 @@ object Sword {
   private var damageIncreased: Int = 0
 
 
-  class Sword(str: String) {
-
+  def this(str: String) {
+    this(str)
     if(str == null) ""
 
     name = str + " sword"

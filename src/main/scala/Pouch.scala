@@ -1,8 +1,8 @@
-object Pouch {
+class Pouch {
 
   private var coins: Int = 0
 
-  class Pouch {
+  {
     coins = 0
   }
 
