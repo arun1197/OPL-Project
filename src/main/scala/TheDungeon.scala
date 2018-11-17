@@ -11,7 +11,7 @@ object TheDungeon {
   val RANDOM: Random = new Random()
   val RUN: Int = 3 //Running away option
   val VISIT_STORE: Int = 4 //Visit store option
-  val SCANNER = scala.io.StdIn
+  val SCANNER = scala.util.Stdin
   val USE_POTION = 2 //Using potion option
 
   def main(args: Array[String]): Unit = {
