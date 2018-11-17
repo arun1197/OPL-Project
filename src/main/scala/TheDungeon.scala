@@ -1,8 +1,4 @@
 import scala.util.Random
-import java.io.FileNotFoundException
-import java.io.IOException
-
-import scala.util.control.Breaks._
 
 object TheDungeon {
 
@@ -35,25 +31,25 @@ object TheDungeon {
     System.out.print("Would you like to load your previous game? ")
     val loadGameState: String = SCANNER.readLine()
 
-    if (CONFIRMATION.contains(loadGameState)) {
-      println("\nWhat is your name? ")
-      var name: String = SCANNER.readLine()
-      name = name.replaceAll("\\s+","")
-      player.setName(name)
-      try
-        State.loadState(player)
-      catch {
-        case exception: FileNotFoundException =>
-          System.out.println("\nYour saved game was not found. Starting a new unsaved game.")
-          delay
-        case exception: IOException =>
-          System.out.println("Input from the keyboard could not be read. Please restart the game.")
-      }
-    }
+//    if (CONFIRMATION.contains(loadGameState)) {
+//      println("\nWhat is your name? ")
+//      var name: String = SCANNER.readLine()
+//      name = name.replaceAll("\\s+","")
+//      player.setName(name)
+//      try
+//        State.loadState(player)
+//      catch {
+//        case exception: FileNotFoundException =>
+//          System.out.println("\nYour saved game was not found. Starting a new unsaved game.")
+//          delay
+//        case exception: IOException =>
+//          System.out.println("Input from the keyboard could not be read. Please restart the game.")
+//      }
+//    }
 
     while (running) {
       var villain: Enemy = new Enemy()
-      while(villain.getHealth() > 0){
+      while(villain.getHealth() > 0) {
         printStatistics(player,villain)
         startBattle()
         var choice: Int = 0
@@ -74,19 +70,16 @@ object TheDungeon {
             villain.takeDamage(playerAttack)
             player.takeDamage(enemyAttack)
             delay()
-            break
           }
           case USE_POTION => {
-            if(player.health() > player.FULL_HEALTH - player.POTION_HEALING) {
+            if(player.getHealth() > player.FULL_HEALTH - player.POTION_HEALING) {
               println("\nYou are healthy, and do not need a potion.")
               TheDungeon.delay()
-              break
             }
             player.usePotion()
-            println("\nYou drank the potion. Health restored by: " + Player.POTION_HEALING + " HP")
-            println("Current HP: " + player.health())
+            println("\nYou drank the potion. Health restored by: " + player.POTION_HEALING + " HP")
+            println("Current HP: " + player.getHealth())
             delay()
-            break
           }
           case RUN => {
             /* Penalize the player by removing their coins or health */
@@ -106,19 +99,17 @@ object TheDungeon {
             /* Kill the enemy by dealing damage equivalent to its health. */
             villain.takeDamage(villain.getHealth())
             ranAway = true
-            break
           }
-          case VISIT_STORE => {
-            /* Print the store options. */
-            Store.printStore(player)
-            break
-          }
+//          case VISIT_STORE => {
+//            /* Print the store options. */
+//            Store.printStore(player)
+//          }
           case EXIT => {
             println("\fExiting game...")
             print("Would you like to save your progress? ")
-            if (CONFIRMATION.contains(SCANNER.readLine())) {
-              State.saveState(player)
-            } // end of if (CONFIRMATION.contains(SCANNER.nextLine()))
+//            if (CONFIRMATION.contains(SCANNER.readLine())) {
+//              State.saveState(player)
+//            } // end of if (CONFIRMATION.contains(SCANNER.nextLine()))
             running = false
             return
           }
@@ -140,28 +131,29 @@ object TheDungeon {
           }// end of else
         }// end of if (player.health() <= 0)
       } //end of while loop (villain.gethealth))
+
       if(!ranAway){
         /* The enemy has died and the player did not run away. This means the player killed the enemy. Reward the player. */
         player.increaseEnemiesKilled()
         /* Give the player some gold for killing the enemy. */
         pouch.addCoins(RANDOM.nextInt(MAXIMUM_GOLD_DROP))
         if (RANDOM.nextInt(100) < swordDropChance){
-          if (player.hasSword()){
+          if (player.getHasSword()){
             println("\nThe " + villain.getName() + " dropped a sword, but you already have one.")
           }
           else{
             player.addSword("")
-            println("\nThe " + villain.getName() + " dropped a " + player.getSword().name() + ".\nYour attack damage has now increased by " + player.getSword().damageIncrease() + ".")
+            println("\nThe " + villain.getName() + " dropped a " + player.getSword().getName() + ".\nYour attack damage has now increased by " + player.getSword().damageIncrease() + ".")
           }
           delay()
         } // end of if (RANDOM.nextInt(100) < swordDropChance)
         else if (RANDOM.nextInt(100) < armourDropChance) {
-          if (player.hasArmour()) {
+          if (player.getHasArmour()) {
             println("\nThe " + villain.getName() + " dropped some armour, but you already have some.")
           }
           else {
             player.addArmour("leather")
-            println("\nThe " + villain.getName() + " dropped " + player.getArmour().name() + ".\nYour damage taken has now decreased by " + player.getArmour().damageBlocked() + ".")
+            println("\nThe " + villain.getName() + " dropped " + player.getArmour().getName() + ".\nYour damage taken has now decreased by " + player.getArmour().getDamageBlocked() + ".")
           }
           delay()
         }
@@ -186,18 +178,18 @@ object TheDungeon {
   def printStatistics(player: Player, villain: Enemy) = {
     //Statistics
     println("\f# A " + villain.getName() + " appeared #")
-    println("\n# You have " + player.health() + " HP #")
+    println("\n# You have " + player.getHealth() + " HP #")
     println("# Enemy has " + villain.getHealth() + " HP #")
     println("# Potions left: " + player.getPotions() + " #")
     println("# Pouch has " + player.getPouch().getCoins() + " coins #")
-    println("# Enemies killed: " + player.enemiesKilled() + " #")
+    println("# Enemies killed: " + player.getEnemiesKilled() + " #")
     // Sword
-    if (player.hasSword()) {
-      println("\n# Sword type: " + player.getSword().name() + " | hitpoints: " + player.getSword().hitpoints() + "  #");
+    if (player.getHasSword()) {
+      println("\n# Sword type: " + player.getSword().getName() + " | hitpoints: " + player.getSword().getHitpoints() + "  #");
     }
     // Armour
-    if (player.hasArmour()) {
-      println("\n# Armour type: " + player.getArmour().name() + " | Armour hitpoints: " + player.getArmour().hitpoints() + "  #");
+    if (player.getHasArmour()) {
+      println("\n# Armour type: " + player.getArmour().getName() + " | Armour hitpoints: " + player.getArmour().getHitpoints() + "  #");
     }
   }
 

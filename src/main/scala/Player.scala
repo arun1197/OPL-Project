@@ -79,11 +79,11 @@ class Player {
     pouch
   }
 
-  def getHasSword: Boolean = {
+  def getHasSword(): Boolean = {
     hasSword
   }
 
-  def getHasArmour: Boolean = {
+  def getHasArmour(): Boolean = {
     hasArmour
   }
 

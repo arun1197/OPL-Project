@@ -14,7 +14,7 @@ class Armour {
 
 
   def this(str: String) {
-    this(str)
+    this()
     if(str == null) ""
 
     name = str + " armour"
