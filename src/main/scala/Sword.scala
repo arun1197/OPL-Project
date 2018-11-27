@@ -14,7 +14,7 @@ class Sword {
 
   private var name: String = ""
   private var hitpoints: Int = 0
-  private var damageIncreased: Int = 0
+  private var damageIncrease: Int = 0
 
 
   def this(str: String) {
@@ -26,20 +26,20 @@ class Sword {
     str match {
       case "wood" =>
         hitpoints = WOOD_HITPOINTS
-        damageIncreased = WOOD_DAMAGE_INCREASE
+        damageIncrease = WOOD_DAMAGE_INCREASE
 
       case "metal" =>
         hitpoints = METAL_HITPOINTS
-        damageIncreased = METAL_DAMAGE_INCREASE
+        damageIncrease = METAL_DAMAGE_INCREASE
 
       case "gold" =>
         hitpoints = GOLD_HITPOINTS
-        damageIncreased = GOLD_DAMAGE_INCREASE
+        damageIncrease = GOLD_DAMAGE_INCREASE
 
       case _ =>
         name = "wood sword"
         hitpoints = WOOD_HITPOINTS
-        damageIncreased = WOOD_DAMAGE_INCREASE
+        damageIncrease = WOOD_DAMAGE_INCREASE
     }
   }
 
@@ -47,7 +47,7 @@ class Sword {
 
   def getHitpoints(): Int = hitpoints
 
-  def damageIncrease(): Int = damageIncrease
+  def getDamageIncrease(): Int = damageIncrease
 
   def setName(name: String) = this.name = name
 

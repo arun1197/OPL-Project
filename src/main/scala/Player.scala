@@ -24,32 +24,16 @@ class Player {
   val NO_NAME: String = ""
 
   /* instance fields */
-  private var armour: Armour = _
-  private var attackDamage: Int = _
-  private var enemiesKilled: Int = _
-  private var hasSword: Boolean = _
-  private var hasArmour: Boolean = _
-  private var health: Int = _
-  private var pouch: Pouch = _
-  private var name: String = _
-  private var potionsRemaining: Int = _
-  private var sword: Sword = _
-
-  /**
-    * Constructs a new Player.
-    */
-
-  {
-    name = NO_NAME
-    hasSword = false
-    hasArmour = false
-    health = FULL_HEALTH
-    potionsRemaining = DEFAULT_NUMBER_OF_POTIONS
-    enemiesKilled = 0
-    sword = new Sword("balloon")
-    armour = new Armour("clothes")
-    pouch = new Pouch()
-  }
+  private var armour: Armour = new Armour("clothes")
+//  private var attackDamage: Int = _
+  private var enemiesKilled: Int = 0
+  private var hasSword: Boolean = false
+  private var hasArmour: Boolean = false
+  private var health: Int = FULL_HEALTH
+  private var pouch: Pouch = new Pouch()
+  private var name: String = NO_NAME
+  private var potionsRemaining: Int = DEFAULT_NUMBER_OF_POTIONS
+  private var sword: Sword = new Sword("balloon")
 
   def getName(): String = {
     name
@@ -126,7 +110,7 @@ class Player {
         }
         hasSword = false
       }
-      return RANDOM.nextInt(MAXIMUM_ATTACK_DAMAGE) + sword.damageIncrease()
+      return RANDOM.nextInt(MAXIMUM_ATTACK_DAMAGE) + sword.getDamageIncrease()
     }
     return RANDOM.nextInt(MAXIMUM_ATTACK_DAMAGE)
   }
@@ -134,7 +118,7 @@ class Player {
   def takeDamage(damage: Int) = {
     if (hasArmour){
       armour.useArmour()
-      health = health - Math.max(damage - armour.getDamageBlocked(), 0)
+      health = health - Math.max(damage - armour.getDamageBlocked(), 0) //max because when enemies attack is lesser than the armour damage blocked
       if (armour.getHitpoints() <= 0) {
         println("\nYour " + armour.getName() + " broke.")
         try {

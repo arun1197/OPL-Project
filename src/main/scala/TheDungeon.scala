@@ -1,9 +1,11 @@
+import java.io.{FileNotFoundException, IOException}
+
 import scala.util.Random
 
 object TheDungeon {
 
   val ATTACK: Int = 1 // Option for attacking
-  val CONFIRMATION: String = "yesyyupoksureof course" // String containing all acceptable answers to yes and no question
+  val CONFIRMATION: String = "yesyupoksureof course" // String containing all confirmation answers
   val DELAY: Long = 2000 //delay for displaying messages
   val EXIT: Int = 5 //exit game option
   val MAXIMUM_GOLD_DROP: Int = 30 //Maximum gold you can receive
@@ -11,10 +13,19 @@ object TheDungeon {
   val RANDOM: Random = new Random()
   val RUN: Int = 3 //Running away option
   val VISIT_STORE: Int = 4 //Visit store option
-  val SCANNER = scala.util.Stdin
+  val SCANNER = scala.io.StdIn
   val USE_POTION = 2 //Using potion option
 
+
+  val SWORD_LIST: List[String] = List("wood","metal","gold")
+  val ARMOUR_LIST: List[String] = List("leather","iron","gold")
+
+
   def main(args: Array[String]): Unit = {
+    run()
+  }//end of main
+
+  def run(): Unit = {
     var player: Player = new Player()
     var pouch: Pouch = player.getPouch()
 
@@ -31,21 +42,21 @@ object TheDungeon {
     System.out.print("Would you like to load your previous game? ")
     val loadGameState: String = SCANNER.readLine()
 
-//    if (CONFIRMATION.contains(loadGameState)) {
-//      println("\nWhat is your name? ")
-//      var name: String = SCANNER.readLine()
-//      name = name.replaceAll("\\s+","")
-//      player.setName(name)
-//      try
-//        State.loadState(player)
-//      catch {
-//        case exception: FileNotFoundException =>
-//          System.out.println("\nYour saved game was not found. Starting a new unsaved game.")
-//          delay
-//        case exception: IOException =>
-//          System.out.println("Input from the keyboard could not be read. Please restart the game.")
-//      }
-//    }
+    if (CONFIRMATION.contains(loadGameState)) {
+      println("\nWhat is your name? ")
+      var name: String = SCANNER.readLine()
+      name = name.replaceAll("\\s+","")
+      player.setName(name)
+      try
+        State.loadState(player)
+      catch {
+        case exception: FileNotFoundException =>
+          System.out.println("\nYour saved game was not found. Starting a new unsaved game.")
+          delay
+        case exception: IOException =>
+          System.out.println("Input from the keyboard could not be read. Please restart the game.")
+      }
+    }
 
     while (running) {
       var villain: Enemy = new Enemy()
@@ -65,7 +76,7 @@ object TheDungeon {
             ranAway = false
             var playerAttack: Int = player.attack()
             var enemyAttack: Int = villain.attack()
-            println("\nYou dealt " + playerAttack + " damage.")
+            println("\nYou attacked with " + playerAttack + " damage.")
             println("You took " + enemyAttack + " damage.")
             villain.takeDamage(playerAttack)
             player.takeDamage(enemyAttack)
@@ -76,10 +87,16 @@ object TheDungeon {
               println("\nYou are healthy, and do not need a potion.")
               TheDungeon.delay()
             }
-            player.usePotion()
-            println("\nYou drank the potion. Health restored by: " + player.POTION_HEALING + " HP")
-            println("Current HP: " + player.getHealth())
-            delay()
+            else if(player.getPotions() > 0){
+              player.usePotion()
+              println("\nYou drank the potion. Health restored by: " + player.POTION_HEALING + " HP")
+              println("Current HP: " + player.getHealth())
+              delay()
+            }else{
+              println("You don't have any potions, buy some!")
+              delay()
+            }
+
           }
           case RUN => {
             /* Penalize the player by removing their coins or health */
@@ -100,23 +117,23 @@ object TheDungeon {
             villain.takeDamage(villain.getHealth())
             ranAway = true
           }
-//          case VISIT_STORE => {
-//            /* Print the store options. */
-//            Store.printStore(player)
-//          }
+          case VISIT_STORE => {
+            /* Print the store options. */
+            Store.printStore(player)
+          }
           case EXIT => {
             println("\fExiting game...")
             print("Would you like to save your progress? ")
-//            if (CONFIRMATION.contains(SCANNER.readLine())) {
-//              State.saveState(player)
-//            } // end of if (CONFIRMATION.contains(SCANNER.nextLine()))
+            if (CONFIRMATION.contains(SCANNER.readLine())) {
+              State.saveState(player)
+            } // end of if (CONFIRMATION.contains(SCANNER.nextLine()))
             running = false
             return
           }
         }// end of choice match
         if (player.getHealth() <= 0){
-          println("\nUh oh! You have died, game over.")
-          print("Would you like to respawn? ")
+          println("\nUh oh! You have died, game over. You're a n00b!")
+          print("Would you like to restart the game? ")
           var continueGame: String = SCANNER.readLine()
           if (CONFIRMATION.contains(continueGame)){
             running = true
@@ -142,8 +159,8 @@ object TheDungeon {
             println("\nThe " + villain.getName() + " dropped a sword, but you already have one.")
           }
           else{
-            player.addSword("")
-            println("\nThe " + villain.getName() + " dropped a " + player.getSword().getName() + ".\nYour attack damage has now increased by " + player.getSword().damageIncrease() + ".")
+            player.addSword(SWORD_LIST(RANDOM.nextInt(3))) //TODO: have to add a list of swords
+            println("\nThe " + villain.getName() + " dropped a " + player.getSword().getName() + ".\nYour attack damage has now increased by " + player.getSword().getDamageIncrease() + ".")
           }
           delay()
         } // end of if (RANDOM.nextInt(100) < swordDropChance)
@@ -152,7 +169,7 @@ object TheDungeon {
             println("\nThe " + villain.getName() + " dropped some armour, but you already have some.")
           }
           else {
-            player.addArmour("leather")
+            player.addArmour(ARMOUR_LIST(RANDOM.nextInt(3))) //TODO: have to add a list of armour
             println("\nThe " + villain.getName() + " dropped " + player.getArmour().getName() + ".\nYour damage taken has now decreased by " + player.getArmour().getDamageBlocked() + ".")
           }
           delay()
@@ -164,7 +181,7 @@ object TheDungeon {
         }//end of else if
       }//end of (!runAway)
     } //end of while(running)
-  }//end of main
+  }
 
   def startBattle() = {
     println("\n1. Attack.")
@@ -177,6 +194,7 @@ object TheDungeon {
 
   def printStatistics(player: Player, villain: Enemy) = {
     //Statistics
+    println("====================================================================")
     println("\f# A " + villain.getName() + " appeared #")
     println("\n# You have " + player.getHealth() + " HP #")
     println("# Enemy has " + villain.getHealth() + " HP #")

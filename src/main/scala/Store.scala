@@ -1,14 +1,18 @@
-class Store {
+import java.util.InputMismatchException
+
+
+object Store {
 
   val ITEM: List[String] = List("Sword", "Armour", "Potions")
 
   val PRICE: List[Int] = List(100, 50, 10)
 
   def printStore(player: Player): Unit = {
+    println("====================================================================")
     println("\fWelcome to the store.\n")
     println("You have " + player.getPouch.getCoins + " coins.\n")
 
-    for(i <- 0 to ITEM.length) {
+    for(i <- 0 to ITEM.length - 1) {
       println(i + 1 + ". " + ITEM(i) + ", Price: " + PRICE(i))
     }
 
@@ -16,22 +20,25 @@ class Store {
     getInput(player)
   }
 
-  import java.util.InputMismatchException
-
   def getInput(player: Player): Unit = {
-    val SCANNER = scala.io.Stdin
-//    val scanner = new Nothing(System.in)
+    val SCANNER = scala.io.StdIn
     var itemIndex = 0
     try {
-      itemIndex = SCANNER.nextInt() - 1
-      if (itemIndex < 0 || itemIndex >= ITEM.length) return
+      itemIndex = SCANNER.readInt() - 1
+      if (itemIndex >= 0 && itemIndex < ITEM.length) {
+        buyItem(player, itemIndex)
+      }
+      else{
+        println("\nExiting store...")
+        TheDungeon.delay()
+        return
+      }
     } catch {
-      case exception: InputMismatchException =>
+      case exception: NumberFormatException => //InputMismatchException
         println("\nExiting store...")
         TheDungeon.delay()
         return
     }
-    buyItem(player, itemIndex)
   }
 
   def buyItem(player: Player, itemIndex: Int): Unit = {

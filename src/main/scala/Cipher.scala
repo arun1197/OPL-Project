@@ -6,17 +6,17 @@ object Cipher {
 
   def encrypt(data: String): String = {
     var encrypted: String = ""
-    for(i <- 0 to data.length) {
-      encrypted += (data.charAt(i).toInt + KEY).asInstanceOf[Char]
+    for(i <- 0 to data.length - 1) {
+      encrypted += (data.charAt(i).asInstanceOf[Int] + KEY).asInstanceOf[Char]
     }
-    encrypted
+    return encrypted
   }
 
   def decrypt(message: String): String = {
     var decrypted = ""
-    for(i <- 0 to message.length) {
-      decrypted += (message.charAt(i).toInt - KEY).asInstanceOf[Char]
+    for(i <- 0 to message.length - 1) {
+      decrypted += (message.charAt(i).asInstanceOf[Int] - KEY).asInstanceOf[Char]
     }
-    decrypted
+    return decrypted
   }
 }
