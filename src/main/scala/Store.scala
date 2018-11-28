@@ -30,13 +30,13 @@ object Store {
       }
       else{
         println("\nExiting store...")
-        TheDungeon.delay()
+        Game.delay()
         return
       }
     } catch {
-      case exception: NumberFormatException => //InputMismatchException
+      case exception: NumberFormatException =>
         println("\nExiting store...")
-        TheDungeon.delay()
+        Game.delay()
         return
     }
   }
@@ -44,7 +44,7 @@ object Store {
   def buyItem(player: Player, itemIndex: Int): Unit = {
     if (player.getPouch.getCoins < PRICE(itemIndex)) {
       println("\nYou cannot afford " + ITEM(itemIndex) + ". Please purchase an afforable item.")
-      TheDungeon.delay()
+      Game.delay()
       printStore(player)
       return
     }
@@ -55,6 +55,6 @@ object Store {
     }
     player.getPouch.removeCoins(PRICE(itemIndex))
     println("\nYou purchased: " + ITEM(itemIndex) + ", for " + PRICE(itemIndex) + " coins")
-    TheDungeon.delay()
+    Game.delay()
   }
 }

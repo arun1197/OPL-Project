@@ -2,7 +2,7 @@ import scala.util.Random
 
 class Enemy {
 
-  val ENEMY_NAMES: List[String] = List("Zombie", "Skeleton", "Warrior", "Goblin", "Werewolf", "Vampire")
+  val ENEMY_NAMES: List[String] = List("Zombie", "Demon", "Witch", "Wizard", "Werewolf", "Orc")
 
   val MAXIMUM_ATTACK_DAMAGE: Int = 20
 

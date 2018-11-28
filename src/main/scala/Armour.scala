@@ -48,6 +48,4 @@ class Armour {
 
   def useArmour() = hitpoints = hitpoints - 1
 
-  def repairArmour(hitpointsToRepair: Int) = hitpoints = hitpoints + hitpointsToRepair
-
 }

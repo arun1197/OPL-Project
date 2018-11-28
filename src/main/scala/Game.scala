@@ -2,14 +2,16 @@ import java.io.{FileNotFoundException, IOException}
 
 import scala.util.Random
 
-object TheDungeon {
+object Game {
 
   val ATTACK: Int = 1 // Option for attacking
-  val CONFIRMATION: String = "yesyupoksureof course" // String containing all confirmation answers
+  val CONFIRMATION: String = "yesyeayupoksure" // String containing all confirmation answers
+  val REFUTATION: String = "nopenah"
   val DELAY: Long = 2000 //delay for displaying messages
   val EXIT: Int = 5 //exit game option
   val MAXIMUM_GOLD_DROP: Int = 30 //Maximum gold you can receive
-  val PENALTY_FOR_RUNNING: Int = 5 // coin penalty for running away
+  val PENALTY_FOR_RUNNING: Int = 5 // penalty for running away
+  val PENALTY_FOR_WRONG_INPUT: Int = 5 // penalty for wrong input
   val RANDOM: Random = new Random()
   val RUN: Int = 3 //Running away option
   val VISIT_STORE: Int = 4 //Visit store option
@@ -23,40 +25,51 @@ object TheDungeon {
 
   def main(args: Array[String]): Unit = {
     run()
-  }//end of main
+  }
 
   def run(): Unit = {
     var player: Player = new Player()
     var pouch: Pouch = player.getPouch()
 
     // Game variables
-    /* The following three chance variables are percentages */
     var armourDropChance: Int = 10
     var healthPotionDropChance: Int = 50
     var swordDropChance: Int = 10
-    var running: Boolean = true
+    var running: Boolean = false
     var ranAway: Boolean = false
 
     // Game introduction
     println("\fWelcome to the dungeon.");
-    System.out.print("Would you like to load your previous game? ")
-    val loadGameState: String = SCANNER.readLine()
+    print("Would you like to load your previous game? ")
 
-    if (CONFIRMATION.contains(loadGameState)) {
-      println("\nWhat is your name? ")
-      var name: String = SCANNER.readLine()
-      name = name.replaceAll("\\s+","")
-      player.setName(name)
-      try
-        State.loadState(player)
-      catch {
-        case exception: FileNotFoundException =>
-          System.out.println("\nYour saved game was not found. Starting a new unsaved game.")
-          delay
-        case exception: IOException =>
-          System.out.println("Input from the keyboard could not be read. Please restart the game.")
+    while(!running) {
+      val loadGameState: String = SCANNER.readLine()
+      if (CONFIRMATION.contains(loadGameState.toLowerCase())) {
+        println("\nWhat is your name? ")
+        var name: String = SCANNER.readLine()
+        name = name.replaceAll("\\s+","")
+        player.setName(name)
+        try{
+          State.loadState(player)
+          running = true
+        }
+        catch {
+          case exception: FileNotFoundException =>
+            println("\nYour saved game was not found. Starting a new unsaved game.")
+            running = true
+            delay
+          case exception: IOException =>
+            println("Input from the keyboard could not be read. Please restart the game.")
+        }
+      }
+      else if (REFUTATION.contains(loadGameState.toLowerCase)){
+        running = true
+      }else{
+        println("Invalid command!")
+        print("Would you like to load your previous game? ")
       }
     }
+
 
     while (running) {
       var villain: Enemy = new Enemy()
@@ -69,7 +82,7 @@ object TheDungeon {
         }
         catch {
           case exception: NumberFormatException =>
-            choice = RUN
+//            println("Invalid input type! You'll be penalised.")
         }
         choice match {
           case ATTACK => {
@@ -85,7 +98,7 @@ object TheDungeon {
           case USE_POTION => {
             if(player.getHealth() > player.FULL_HEALTH - player.POTION_HEALING) {
               println("\nYou are healthy, and do not need a potion.")
-              TheDungeon.delay()
+              delay()
             }
             else if(player.getPotions() > 0){
               player.usePotion()
@@ -99,26 +112,23 @@ object TheDungeon {
 
           }
           case RUN => {
-            /* Penalize the player by removing their coins or health */
+            /* pPENALTY FOR RUNNING AWAY BRUHHHH */
             if (player.getPouch.getCoins > PENALTY_FOR_RUNNING) {
               println("\n" + PENALTY_FOR_RUNNING + " coins were stolen by the " + villain.getName())
               pouch.removeCoins(PENALTY_FOR_RUNNING)
             }
-            /* Player does not have enough coins. Take away health instead of coins. */
             else {
               println("\nThe enemy did " + PENALTY_FOR_RUNNING + " damage before you managed to escape")
               player.takeDamage(PENALTY_FOR_RUNNING)
-            } // end of if (player.getPouch().getCoins() > PENALTY_FOR_RUNNING)
+            }
 
             println("\nYou successfully ran away!")
             delay()
 
-            /* Kill the enemy by dealing damage equivalent to its health. */
             villain.takeDamage(villain.getHealth())
             ranAway = true
           }
           case VISIT_STORE => {
-            /* Print the store options. */
             Store.printStore(player)
           }
           case EXIT => {
@@ -126,11 +136,22 @@ object TheDungeon {
             print("Would you like to save your progress? ")
             if (CONFIRMATION.contains(SCANNER.readLine())) {
               State.saveState(player)
-            } // end of if (CONFIRMATION.contains(SCANNER.nextLine()))
+            }
             running = false
             return
           }
-        }// end of choice match
+          case _ => {
+            if (player.getPouch.getCoins > PENALTY_FOR_WRONG_INPUT) {
+              println("Oops! wrong input, too bad we took " + PENALTY_FOR_WRONG_INPUT + " coins!")
+              pouch.removeCoins(PENALTY_FOR_WRONG_INPUT)
+            }
+            else {
+              println("Oops! wrong input, too bad we took " + PENALTY_FOR_WRONG_INPUT + " HP!")
+              player.takeDamage(PENALTY_FOR_WRONG_INPUT)
+            }
+            delay()
+          }
+        }
         if (player.getHealth() <= 0){
           println("\nUh oh! You have died, game over. You're a n00b!")
           print("Would you like to restart the game? ")
@@ -141,35 +162,32 @@ object TheDungeon {
           }
           else {
             println("\nProgram terminated.")
-            /* Kill the enemy by dealing damage equivalent to its health. */
             villain.takeDamage(villain.getHealth())
             running = false
             return
-          }// end of else
-        }// end of if (player.health() <= 0)
-      } //end of while loop (villain.gethealth))
+          }
+        }
+      }
 
       if(!ranAway){
-        /* The enemy has died and the player did not run away. This means the player killed the enemy. Reward the player. */
         player.increaseEnemiesKilled()
-        /* Give the player some gold for killing the enemy. */
         pouch.addCoins(RANDOM.nextInt(MAXIMUM_GOLD_DROP))
         if (RANDOM.nextInt(100) < swordDropChance){
           if (player.getHasSword()){
             println("\nThe " + villain.getName() + " dropped a sword, but you already have one.")
           }
           else{
-            player.addSword(SWORD_LIST(RANDOM.nextInt(3))) //TODO: have to add a list of swords
+            player.addSword(SWORD_LIST(RANDOM.nextInt(3)))
             println("\nThe " + villain.getName() + " dropped a " + player.getSword().getName() + ".\nYour attack damage has now increased by " + player.getSword().getDamageIncrease() + ".")
           }
           delay()
-        } // end of if (RANDOM.nextInt(100) < swordDropChance)
+        }
         else if (RANDOM.nextInt(100) < armourDropChance) {
           if (player.getHasArmour()) {
             println("\nThe " + villain.getName() + " dropped some armour, but you already have some.")
           }
           else {
-            player.addArmour(ARMOUR_LIST(RANDOM.nextInt(3))) //TODO: have to add a list of armour
+            player.addArmour(ARMOUR_LIST(RANDOM.nextInt(3)))
             println("\nThe " + villain.getName() + " dropped " + player.getArmour().getName() + ".\nYour damage taken has now decreased by " + player.getArmour().getDamageBlocked() + ".")
           }
           delay()
@@ -178,9 +196,9 @@ object TheDungeon {
           player.addPotions(1)
           println("\nThe " + villain.getName() + " dropped a health potion.")
           delay()
-        }//end of else if
-      }//end of (!runAway)
-    } //end of while(running)
+        }
+      }
+    }
   }
 
   def startBattle() = {
@@ -203,7 +221,7 @@ object TheDungeon {
     println("# Enemies killed: " + player.getEnemiesKilled() + " #")
     // Sword
     if (player.getHasSword()) {
-      println("\n# Sword type: " + player.getSword().getName() + " | hitpoints: " + player.getSword().getHitpoints() + "  #");
+      println("\n# Sword type: " + player.getSword().getName() + " | Sword hitpoints: " + player.getSword().getHitpoints() + "  #");
     }
     // Armour
     if (player.getHasArmour()) {
@@ -217,10 +235,10 @@ object TheDungeon {
       }
     catch {
       case exception: InterruptedException =>
-        System.out.println("\fThe game experienced an interrupted exception.")
-        System.out.println("The game state was not saved.")
-        System.out.println("Please restart the game.")
+        println("\fThe game experienced an interrupted exception.")
+        println("The game state was not saved.")
+        println("Please restart the game.")
         System.exit(0)
-    } // end of catch (InterruptedException)
-  }// end of method delay()}
+    }
+  }
 }

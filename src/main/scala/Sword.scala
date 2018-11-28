@@ -53,6 +53,4 @@ class Sword {
 
   def useSword() = hitpoints -= 1
 
-  def repairSword(hitpointsToRepair: Int) = hitpoints = hitpoints + hitpointsToRepair
-
 }

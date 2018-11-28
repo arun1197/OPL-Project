@@ -25,7 +25,6 @@ class Player {
 
   /* instance fields */
   private var armour: Armour = new Armour("clothes")
-//  private var attackDamage: Int = _
   private var enemiesKilled: Int = 0
   private var hasSword: Boolean = false
   private var hasArmour: Boolean = false
