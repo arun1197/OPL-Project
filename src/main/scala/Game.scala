@@ -82,7 +82,7 @@ object Game {
         }
         catch {
           case exception: NumberFormatException =>
-//            println("Invalid input type! You'll be penalised.")
+//            println("Invalid input type!")
         }
         choice match {
           case ATTACK => {

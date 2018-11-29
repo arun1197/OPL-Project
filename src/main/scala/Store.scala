@@ -12,10 +12,12 @@ object Store {
     println("\fWelcome to the store.\n")
     println("You have " + player.getPouch.getCoins + " coins.\n")
 
+
     for(i <- 0 to ITEM.length - 1) {
       println(i + 1 + ". " + ITEM(i) + ", Price: " + PRICE(i))
     }
 
+    println("\nPress any key to exit store.")
     print("\nWhat would you like to buy? ")
     getInput(player)
   }
